@@ -1,0 +1,24 @@
+--DUAL테이블로 데이터 복제
+SELECT A.DEPTNO 부서번호
+     , (CASE WHEN B.RNUM = 1 THEN TO_CHAR(A.EMPNO) ELSE '부서계' END) AS 사원번호
+	 , SUM(A.SAL) 급여합
+	 , ROUND(AVG(SAL)) 급여평균
+  FROM EMP A
+     , (SELECT ROWNUM RNUM FROM DUAL CONNECT BY LEVEL <= 2) B
+ GROUP BY 
+       A.DEPTNO
+	 , B.RNUM
+	 , (CASE WHEN B.RNUM = 1 THEN TO_CHAR(A.EMPNO) ELSE '부서계' END)
+ ORDER BY 1, 2;	 
+ 
+--ROLLUP 사용
+SELECT DEPTNO 부서번호
+     , (CASE WHEN GROUPING(EMPNO) = 1 THEN '부서계' ELSE TO_CHAR(EMPNO) END) AS 사원번호
+	 , SUM(A.SAL) 급여합
+	 , ROUND(AVG(SAL)) 급여평균
+  FROM EMP
+ GROUP BY 
+       DEPTNO
+	 , ROLLUP(EMPNO)
+ ORDER BY 1, 2;	 
+	 
